@@ -1,39 +1,36 @@
-import React, { Component } from "react";
+import React, { useEffect } from "react";
 import PropTypes from 'prop-types';
 import { Overlay, ModalImg } from "./Modal.styled";
 
-export class Modal extends Component {
-  componentDidMount() {
-    window.addEventListener("keydown", this.handleKeyPress);
-  }
+export const Modal = ({ selectedImage, onClose }) => {
+  useEffect(() => {
+    const handleKeyPress = (e) => {
+      if (e.key === "Escape") {
+        onClose();
+      }
+    };
 
-  componentWillUnmount() {
-    window.removeEventListener("keydown", this.handleKeyPress);
-  }
+    window.addEventListener("keydown", handleKeyPress);
 
-  handleKeyPress = (e) => {
-    if (e.key === "Escape") {
-      this.props.onClose();
-    }
-  };
+    return () => {
+      window.removeEventListener("keydown", handleKeyPress);
+    };
+  }, [onClose]);
 
-  handleClickOverlay = (e) => {
+  const handleClickOverlay = (e) => {
     if (e.target === e.currentTarget) {
-      this.props.onClose();
+      onClose();
     }
   };
 
-  render() {
-    const { selectedImage } = this.props;
-    return (
-      <Overlay onClick={this.handleClickOverlay}>
-        <ModalImg>
-          <img src={selectedImage.largeImageURL} alt={selectedImage.tags} />
-        </ModalImg>
-      </Overlay>
-    );
-  }
-}
+  return (
+    <Overlay onClick={handleClickOverlay}>
+      <ModalImg>
+        <img src={selectedImage.largeImageURL} alt={selectedImage.tags} />
+      </ModalImg>
+    </Overlay>
+  );
+};
 
 Modal.propTypes = {
   selectedImage: PropTypes.shape({
